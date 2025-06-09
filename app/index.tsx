@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import icons from "@/constants/icons";
 
 export default function Index() {
   return (
@@ -9,7 +10,8 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text className="font-bold">Edit app/index.tsx to edit this screen.</Text>
+      <Text className="font-bold color-border">Edit app/index.tsx to edit this screen.</Text>
+      <Image source={icons.google}></Image>
     </View>
   );
 }
