@@ -9,7 +9,18 @@ module.exports = {
         primary:"#3260E7",
         danger:"#f5331d",
         border:"#EDF1F6",
-        text:"#0B0B0B"
+        text:"#0B0B0B",
+        gray:"#D2D5dd"
+      },
+      height:{
+        small:"100px",
+        med:"150px",
+        large:"200px"
+      },
+      width:{
+         small:"100px",
+        med:"150px",
+        large:"200px"
       }
     },
   },

@@ -1,17 +1,11 @@
-import { Image, Text, View } from "react-native";
+import { Image, SafeAreaView, Text, View } from "react-native";
 import icons from "@/constants/icons";
+import { Link } from "expo-router";
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text className="font-bold color-border">Edit app/index.tsx to edit this screen.</Text>
-      <Image source={icons.google}></Image>
-    </View>
+   <SafeAreaView>
+      <Link href="./sign/Start" className="color-text">SignUp</Link>
+   </SafeAreaView>
   );
 }
