@@ -1,62 +1,117 @@
-import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import Svg, { Path } from 'react-native-svg';// npm installl
 import icons from '@/constants/icons';
-import { router, useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Checkbox } from 'react-native-paper';
 
 
 
 const SignUp = () => {
   const router = useRouter();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isChecked, setChecked] = useState(false); 
   const [activeTab, setActiveTab] = useState('Sign up');
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
-  const [inputText, setInputText] = useState("");
+  const [show,setShow] = useState(true)
+  const [showConfirm,setShowConfirm] = useState(true)
+  const [showLogInpass, setShowLogInpass] = useState(true);
 
 
   const tabs = ['Sign in', 'Sign up'];
 
-  const handleInputChange = (text:string) => {
-    setInputText(text);
+  const handleFullNameChange = (text: string) => setFullName(text);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
     setIsValidEmail(true);
   };
-
-  const handleChange = (text:string) => {
-    setInputText(text);
-    setIsValidPassword(true);
+  const handlePasswordChange = (text: string) => {
+      setPassword(text);
+      setIsValidPassword(true);
+      setPasswordsMatch(text === confirmPassword);
+  }; 
+  const handleConfirmPasswordChange = (text: string) =>{
+     setConfirmPassword(text);
+     setPasswordsMatch(text === password);
   };
-
 
 
   const validateEmail = (email: string) => {
   // Simple regex for email validation
   return /\S+@\S+\.\S+/.test(email);
 };
+
 const validatePassword = (password: string) => {
   // Simple regex for password validation
-  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
 };
 
-
-
-  const handleSubmit = () => {
-  if (!validateEmail(inputText)) {
-    Alert.alert("Invalid email address");
-    setIsValidEmail(false);
-    return;
+// submit
+const handleSubmit = () => {
+  if (activeTab === 'Sign up') {
+    if (!validateEmail(email)) {
+      Alert.alert("Invalid email address");
+      setIsValidEmail(false);
+      return;
+    }
+    if(!isFormValid){
+      Alert.alert("Please fill the form!")
+    }
+    if (!validatePassword(password)) {
+      Alert.alert("Password must be at least 8 characters long and contain a number");
+      setIsValidPassword(false);
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("Passwords do not match");
+      return;
+    }
+    // Navigate to destination
+    router.push("./destination");
+  } else {
+    // Sign in validation (optional)
+    if (!validateEmail(email)) {
+      Alert.alert("Invalid email for sign in");
+      return;
+    }
+    if (password.length < 8) {
+      Alert.alert("Password too short");
+      return;
+    }
+    router.push("./destination");
   }
-  // Proceed with API call or navigation
-  router.push("./destination"); // Navigate only on valid input
 };
+
 
   const WaveIndicator = () => (
     <Svg height="8" width="50" viewBox="0 0 50 8">
       <Path d="M0,10 L25,0 L50, 10 Z" fill="#2563eb" />
     </Svg>
   );
+
+  const isFormValid = () => {
+    if (activeTab === 'Sign up') {
+      return (
+        fullName.trim() !== '' &&
+        validateEmail(email) &&
+        validatePassword(password) &&
+        password === confirmPassword &&
+        isChecked
+      );
+    } else {
+      return (
+        validateEmail(email) &&
+        password.length >= 8
+      );
+    }
+  };
+
 
   return (
     <SafeAreaView>
@@ -106,10 +161,10 @@ const validatePassword = (password: string) => {
             <Text>Full Name</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-8" source={icons.user} />
             <TextInput
-              onChangeText={handleInputChange}
-              className={`border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14 ${
-                isValidEmail ? 'border-black-100' : 'border-red-500'
-              }`}
+              autoFocus
+              onChangeText={handleFullNameChange}
+              className={"border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14"
+              }
               placeholder="Full Name"
               placeholderTextColor="#9BA5B7"
             />
@@ -120,8 +175,10 @@ const validatePassword = (password: string) => {
             <Text>Email</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.mail} />
             <TextInput
-              onChangeText={handleChange}
-              className="border border-gray-500 p-5 rounded-lg mb-2 mt-2 pl-14"
+              onChangeText={handleEmailChange}
+              className={`border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14 ${
+                !isValidEmail && 'border-danger border-2'
+              }`}
               placeholder="Email"
               placeholderTextColor="#9BA5B7"
             />
@@ -131,13 +188,16 @@ const validatePassword = (password: string) => {
           <View>
             <Text>Password</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.lock} />
-            <Image className="absolute w-8 h-8 right-4 bottom-6" source={icons.hide} />
+            {show ? 
+               <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShow(!show)}}> <Image className='w-8 h-8' source={icons.visible} /></TouchableOpacity>
+            :
+               <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShow(!show)}}> <Image className='w-8 h-8' source={icons.hide} /></TouchableOpacity>}
             <TextInput
-              onChangeText={handleChange}
+              onChangeText={handlePasswordChange}
               className="border border-gray-500 p-5 rounded-lg mb-2 mt-2 pl-14"
               placeholder="Password"
               placeholderTextColor="#9BA5B7"
-              secureTextEntry
+              secureTextEntry = {show}
             />
           </View>
 
@@ -145,13 +205,16 @@ const validatePassword = (password: string) => {
           <View>
             <Text>Confirm Password</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.lock} />
-            <Image className="absolute w-8 h-8 right-4 bottom-6" source={icons.hide} />
+            {showConfirm ? 
+            <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShowConfirm(!showConfirm)}}> <Image className='w-8 h-8' source={icons.visible} /></TouchableOpacity>
+            :
+            <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShowConfirm(!showConfirm)}}> <Image className='w-8 h-8' source={icons.hide} /></TouchableOpacity>}
             <TextInput
-              onChangeText={handleChange}
+              onChangeText={handleConfirmPasswordChange}
               className="border border-gray-500 p-5 rounded-lg mb-2 mt-2 pl-14"
               placeholder="Confirm Password"
               placeholderTextColor="#9BA5B7"
-              secureTextEntry
+              secureTextEntry = {showConfirm}
             />
           </View>
         </View>
@@ -163,7 +226,7 @@ const validatePassword = (password: string) => {
             <Text>Email</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.mail} />
             <TextInput
-              onChangeText={handleChange}
+              onChangeText={handleEmailChange}
               className="border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14"
               placeholder="Email"
               placeholderTextColor="#9BA5B7"
@@ -174,17 +237,21 @@ const validatePassword = (password: string) => {
           <View>
             <Text>Password</Text>
             <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.lock} />
-            <Image className="absolute w-8 h-8 right-4 bottom-6" source={icons.hide} />
+            {showLogInpass ? 
+               <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShowLogInpass(!showLogInpass)}}> <Image className='w-8 h-8' source={icons.visible} /></TouchableOpacity>
+            :
+               <TouchableOpacity className="absolute w-8 h-8 right-4 bottom-6 z-40" onPress={()=>{setShowLogInpass(!showLogInpass)}}> <Image className='w-8 h-8' source={icons.hide} /></TouchableOpacity>}
             <TextInput
-              onChangeText={handleChange}
+              onChangeText={handlePasswordChange}
               className="border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14"
               placeholder="Password"
               placeholderTextColor="#9BA5B7"
-              secureTextEntry
+              secureTextEntry = {showLogInpass}
             />
           </View>
         </View>
       )}
+    
 
 
       {/*remember and forget*/}
@@ -195,9 +262,14 @@ const validatePassword = (password: string) => {
           setChecked(!isChecked);
         }} />
         </View>
-          <View className=' mx-3'>
+        {activeTab === "Sign up" ?( <View className=' mx-3'>
             <Text className='text-sm'>I agree to your <Text className='text-primary'>Privacy Policy</Text> and<Text className='text-primary'> Terms and conditions</Text></Text>
-          </View>
+          </View>):
+          ( <View className=' mx-3 flex flex-row justify-between'>
+               <Text>Remember me</Text>
+               <Link href={"/"} className='flex-1 ml-20 pl-16 text-danger'>Forgot password</Link>
+             </View>)
+          }
         </View>
         
       </View>
@@ -209,14 +281,14 @@ const validatePassword = (password: string) => {
         <Text className='text-gray-400'>_____________</Text>
       </View>
       <View className='flex flex-row justify-center gap-4 mt-4'>
-        <View className='border rounded-xl border-gray-300 p-3'><Image className='w-8 h-8  p-2' source={icons.facebook}/></View>
-        <View className='border rounded-xl border-gray-300 p-3'><Image className='w-8 h-8 p-2' source={icons.google}/></View>
-        <View className='border rounded-xl border-gray-300 p-3'><Image className='w-8 h-8 p-2' source={icons.apple}/></View>
+        <TouchableOpacity className='border rounded-xl border-gray-300 p-3'><Image className='w-9 h-9 p-1' source={icons.facebook}/></TouchableOpacity>
+        <TouchableOpacity className='border rounded-xl border-gray-300 p-3'><Image className='w-9 h-9 p-1' source={icons.google}/></TouchableOpacity>
+        <TouchableOpacity className='border rounded-xl border-gray-300 p-3'><Image className='w-9 h-9 p-1' source={icons.apple}/></TouchableOpacity>
       </View>
 
       {/*button*/}
-      <TouchableOpacity onPress={handleSubmit} className='rounded-3xl bg-blue-600 mt-10 mx-3'>
-        <Text className=' text-white text-center p-4 font-bold'>Continue</Text>
+      <TouchableOpacity onPress={handleSubmit} className= {`${isFormValid() ? 'rounded-3xl bg-primary text-white mt-10 mx-3' : 'rounded-3xl bg-blue-300 mt-10 mx-3 font-bold'}`}>
+        <Text className= {`${isFormValid() ? 'text-white text-center p-4 font-bold' : 'text-white text-center p-4 font-bold'}`}>Continue</Text>
       </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
