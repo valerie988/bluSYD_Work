@@ -20,7 +20,8 @@ module.exports = {
       width:{
          small:"100px",
         med:"150px",
-        large:"200px"
+        large:"200px",
+        xlarge:"350px"
       }
     },
   },

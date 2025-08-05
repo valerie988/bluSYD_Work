@@ -7,6 +7,10 @@ import mail from "@/assets/icons/mail.png"
 import visible from "@/assets/icons/visible.png"
 import hide from "@/assets/icons/hide.png"
 import wave from "@/assets/icons/handwave.png"
+import paypal from "@/assets/icons/paypal.png"
+import addlock from "@/assets/icons/lock-open-plus-outline.png"
+import matsercard from "@/assets/icons/Mastercard.png"
+import backArrow from "@/assets/icons/backArrow.png"
 
 
 
@@ -20,5 +24,9 @@ export default{
     mail,
     user,
     lock,
-    wave
+    wave,
+    paypal,
+    addlock,
+    matsercard,
+    backArrow,
 }

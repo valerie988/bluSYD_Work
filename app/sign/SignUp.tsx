@@ -1,12 +1,11 @@
-import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView} from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, KeyboardAvoidingView, Platform} from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import Svg, { Path } from 'react-native-svg';// npm installl
 import icons from '@/constants/icons';
 import { Link, useRouter } from 'expo-router';
 import { Checkbox } from 'react-native-paper';
-
-
+import { StatusBar } from 'expo-status-bar';
 
 const SignUp = () => {
   const router = useRouter();
@@ -55,13 +54,13 @@ const validatePassword = (password: string) => {
 // submit
 const handleSubmit = () => {
   if (activeTab === 'Sign up') {
+     if(!isFormValid){
+      Alert.alert("Please fill the form!")
+    }
     if (!validateEmail(email)) {
       Alert.alert("Invalid email address");
       setIsValidEmail(false);
       return;
-    }
-    if(!isFormValid){
-      Alert.alert("Please fill the form!")
     }
     if (!validatePassword(password)) {
       Alert.alert("Password must be at least 8 characters long and contain a number");
@@ -73,7 +72,7 @@ const handleSubmit = () => {
       return;
     }
     // Navigate to destination
-    router.push("./destination");
+    router.push("/");
   } else {
     // Sign in validation (optional)
     if (!validateEmail(email)) {
@@ -84,7 +83,7 @@ const handleSubmit = () => {
       Alert.alert("Password too short");
       return;
     }
-    router.push("./destination");
+    router.push("/");
   }
 };
 
@@ -115,6 +114,12 @@ const handleSubmit = () => {
 
   return (
     <SafeAreaView>
+      <StatusBar style="light" backgroundColor="#1D4ED8" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
       <ScrollView
       bounces={false} 
       >
@@ -173,7 +178,7 @@ const handleSubmit = () => {
           {/* Email */}
           <View>
             <Text>Email</Text>
-            <Image className="absolute w-8 h-8 left-4 bottom-6" source={icons.mail} />
+            <Image className="absolute w-8 h-8 left-4 bottom-8" source={icons.mail} />
             <TextInput
               onChangeText={handleEmailChange}
               className={`border border-gray-500 p-5 rounded-lg mb-4 mt-2 pl-14 ${
@@ -258,9 +263,11 @@ const handleSubmit = () => {
       <View className='flex flex-row justify-between my-4'>
         <View className='flex flex-row mx-3 items-center'>
         <View className='border flex flex-row justify-center'>
-          <Checkbox  status={isChecked ? 'checked' : 'unchecked'}  onPress={() => {
-          setChecked(!isChecked);
-        }} />
+          <View style={{ transform: [{ scale: 0.75 }] }}>
+             <Checkbox color='#3260E7'   status={isChecked ? 'checked' : 'unchecked'}  onPress={() => {
+              setChecked(!isChecked);
+              }} />
+          </View>
         </View>
         {activeTab === "Sign up" ?( <View className=' mx-3'>
             <Text className='text-sm'>I agree to your <Text className='text-primary'>Privacy Policy</Text> and<Text className='text-primary'> Terms and conditions</Text></Text>
@@ -291,6 +298,7 @@ const handleSubmit = () => {
         <Text className= {`${isFormValid() ? 'text-white text-center p-4 font-bold' : 'text-white text-center p-4 font-bold'}`}>Continue</Text>
       </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

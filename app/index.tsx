@@ -6,6 +6,7 @@ export default function Index() {
   return (
    <SafeAreaView>
       <Link href="./sign/Start" className="color-text">SignUp</Link>
+      <Link href="./vendorPackage/Package" className="text-black">Vendor Package</Link>
    </SafeAreaView>
   );
 }

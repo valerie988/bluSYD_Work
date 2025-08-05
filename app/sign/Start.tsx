@@ -3,7 +3,7 @@ import React from 'react'
 import images from '@/constants/images'
 import MediaSign from '@/components/MediaSign'
 import icons from '@/constants/icons'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 
 const Start = () => {
   return (
@@ -23,12 +23,8 @@ const Start = () => {
            <MediaSign image={icons.facebook} text='Continue with Facebook'/>
 
            <View className='mt-8'>
-             <TouchableOpacity className='flex flex-row rounded-full border border-primary justify-center p-3 mx-8 my-4 bg-primary'>
-                          <Link href={"./"} className=' text-lg text-white'>Sign in</Link>
-                        </TouchableOpacity>
-            <TouchableOpacity className='flex flex-row rounded-full border border-primary justify-center p-3 mx-8 my-4'>
-                          <Link href={"./SignUp"} className=' text-lg text-primary'>Sign up</Link>
-                        </TouchableOpacity>
+             <TouchableOpacity onPress={()=>{router.push("/sign/SignUp")}} className='flex flex-row rounded-full border border-primary justify-center p-3 mx-8 my-4 bg-primary'><Text className='text-white'>Sign in</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>{router.push("/sign/SignUp")}} className='flex flex-row rounded-full border border-primary justify-center p-3 mx-8 my-4'><Text className='text-primary'>Sign up</Text></TouchableOpacity>
            </View>
            <View className='flex flex-row justify-center p-4 items-center '>
             <Text>Terms and conditions  </Text>
